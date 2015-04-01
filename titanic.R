@@ -1,5 +1,6 @@
 #based on https://www.kaggle.com/c/titanic-gettingStarted
 #https://github.com/codebender/kaggle-titanic-r
+#https://github.com/denniskorablev/Titanic-Kaggle
 #VARIABLE DESCRIPTIONS:
 #  survival        Survival
 #(0 = No; 1 = Yes)
@@ -59,25 +60,17 @@
 #        col=c("yellow", "black"), legend=FALSE)
 
 # SETUP: LOAD DATA #############################################################
-setwd("G:/challenges/titanic/")
+setwd("D:/projetos/kaggle-titanic-gettingStarted/")
 
-train <- read.csv("train.csv", stringsAsFactors=FALSE)
-test <- read.csv("test.csv", stringsAsFactors=FALSE)
-# SETUP: FUNCTIONS #############################################################
-## function for extracting honorific (i.e. title) from the Name feature
-getTitle <- function(data) {
-  title.dot.start <- regexpr("\\,[A-Z ]{1,20}\\.", data$Name, TRUE)
-  title.comma.end <- title.dot.start + attr(title.dot.start, "match.length") - 1
-  data$Title <- substr(data$Name, title.dot.start+2, title.comma.end-1)
-  return (data$Title)
-}   
+train <- read.csv("train.csv")
+test <- read.csv("test.csv")
 
 # HANDLING DATA ################################################################
 # normalizing train and test data (adding a column Survived to test)
-test$Survived <- 0
+test$Survived <- NA
 
 # create a full data.table
-full <- rbind(train, test)
+combi <- rbind(train, test)
 full$Name <- as.character(full$Name)
 
 # get (an normalize) the peope titles
