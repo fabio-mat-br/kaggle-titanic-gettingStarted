@@ -1,0 +1,9 @@
+{
+    "path" : "G:/challenges/titanic",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
