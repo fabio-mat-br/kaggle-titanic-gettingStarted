@@ -71,7 +71,8 @@ test$Survived <- NA
 
 # create a full data.table
 combi <- rbind(train, test)
-full$Name <- as.character(full$Name)
+# Because the csv wasn't load with stringsAsFactors=FALSE
+combi$Name <- as.character(full$Name)
 
 # get (an normalize) the peope titles
 full$Title <- getTitle(full)
