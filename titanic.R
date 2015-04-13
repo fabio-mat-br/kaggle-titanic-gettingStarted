@@ -60,7 +60,7 @@
 #        col=c("yellow", "black"), legend=FALSE)
 
 # SETUP: LOAD DATA #############################################################
-setwd("D:/projetos/kaggle-titanic-gettingStarted/")
+setwd("C:/Users/Suzana e Fabio/Fabio/specialization/kaggle-titanic-gettingStarted")
 
 train <- read.csv("train.csv")
 test <- read.csv("test.csv")
@@ -70,16 +70,17 @@ test <- read.csv("test.csv")
 test$Survived <- NA
 
 # create a full data.table
-combi <- rbind(train, test)
+full <- rbind(train, test)
+
 # Because the csv wasn't load with stringsAsFactors=FALSE
-combi$Name <- as.character(full$Name)
+full$Name <- as.character(full$Name)
 
 # get (an normalize) the peope titles
-full$Title <- getTitle(full)
+full$Title <- sapply(full$Name, FUN=function(x) {strsplit(x, split='[,.]')[[1]][2]})
+full$Title <- sub(' ', '', full$Title)
 full$Title[full$Title %in% c('Mme', 'Mlle')] <- 'Mlle'
 full$Title[full$Title %in% c('Capt', 'Don', 'Major', 'Sir')] <- 'Sir'
 full$Title[full$Title %in% c('Dona', 'Lady', 'the Countess', 'Jonkheer')] <- 'Lady'
-
 # title is a factor, a categorized data
 full$Title <- factor(full$Title)
 
@@ -93,27 +94,3 @@ famIDs <- data.frame(table(full$FamilyID))
 famIDs <- famIDs[famIDs$Freq <= 2,]
 full$FamilyID[full$FamilyID %in% famIDs$Var1] <- 'Small'
 full$FamilyID <- factor(full$FamilyID)
-library(rpart)
-
-Agefit <- rpart(Age ~ Pclass + Sex + SibSp + Parch + Fare + Embarked + Title + FamilySize,
-                data=full[!is.na(full$Age),], method="anova")
-
-full$Age[is.na(full$Age)] <- predict(Agefit, full[is.na(full$Age),])
-
-fare.mod<- lm(Fare ~ Pclass + Sex + SibSp + Parch + Age, data = full)
-full$Fare[is.na(test$Fare)] <- predict(fare.mod, full)[is.na(full$Fare)]
-
-
-#clean_train <- full[1:891,]
-#clean_test <- full[892:1309,]
-#fit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID, data=clean_train, method="class")
-library(randomForest)
-
-fullna <- full
-subset(fullna, FamilySize == NA)
-fit <- randomForest(as.factor(Survived) ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize, data=fullna, importance=TRUE, ntree=200)
-#summary(fit)
-
-#Prediction <- predict(fit, clean_test, type = "class")
-#submit <- data.frame(PassengerId = clean_test$PassengerId, Survived = Prediction)
-#write.csv(submit, file = "engineered_features_tree.csv", row.names = FALSE)
